@@ -1,0 +1,29 @@
+﻿@page
+
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Login Page";
+}
+
+<link rel="stylesheet" href="~/css/styles.css" />
+
+<h2>Login</h2>
+
+<div class="login-container">
+    <form method="post">
+        <div class="form-group">
+            <label for="utdId">UTD ID:</label>
+            <input type="text" id="utdId" name="utdId" required />
+        </div>
+
+        <div class="form-group">
+            <label for="netId">NetID:</label>
+            <input type="text" id="netId" name="netId" required />
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn">Submit</button>
+        </div>
+    </form>
+</div>

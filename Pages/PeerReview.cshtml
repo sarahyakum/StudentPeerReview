@@ -1,0 +1,28 @@
+@page
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Peer Review Page";
+}
+
+<link rel="stylesheet" href="~/css/styles.css" />
+
+<h2>Peer Review</h2>
+
+<div class="peer-review-container">
+    <p>Welcome to the Peer Review Page.</p>
+
+    <!-- Check if it's midterms or finals -->
+    @{
+        bool isMidtermsOrFinals = true; // Change this to false to simulate "Can't Access Page"
+    }
+
+    @if (isMidtermsOrFinals)
+    {
+        <a href="/PeerReviewForm" class="btn">Proceed to Peer Review Form</a>
+    }
+    else
+    {
+        <a href="/AccessDenied" class="btn">Cannot Access Peer Review</a>
+    }
+</div>

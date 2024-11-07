@@ -1,0 +1,58 @@
+@page
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Peer Review Form";
+}
+
+<link rel="stylesheet" href="~/css/styles.css" />
+
+<h2>Peer Review Form</h2>
+
+<div class="peer-review-form">
+    <table>
+        <thead>
+            <tr>
+                <th>Students</th>
+                <th>Criteria 1</th>
+                <th>Criteria 2</th>
+                <th>Criteria 3</th>
+                <!-- Add more criteria as needed -->
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 1; i <= 5; i++) // Assume there are 5 students
+            {
+                <tr>
+                    <td>Student @i</td>
+                    <td>
+                        <select name="criteria1-student@i">
+                            @for (int score = 0; score <= 6; score++)
+                            {
+                                <option value="@score">@score</option>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <select name="criteria2-student@i">
+                            @for (int score = 0; score <= 6; score++)
+                            {
+                                <option value="@score">@score</option>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <select name="criteria3-student@i">
+                            @for (int score = 0; score <= 6; score++)
+                            {
+                                <option value="@score">@score</option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn">Submit Review</button>
+</div>
