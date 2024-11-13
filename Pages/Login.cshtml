@@ -1,0 +1,25 @@
+@page
+@model StudentPR.Pages.LoginModel
+@{
+    ViewData["Title"] = "Log In";
+}
+
+<h1>Log In</h1>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div style="color: red;">@Model.ErrorMessage</div>
+}
+
+<form method="post">
+    <div>
+        <label for="netId">NetID:</label>
+        <input type="text" id="netId" name="NetId" required />
+    </div>
+    <div>
+        <label for="utdId">Password:</label>
+    
+        <input type="password" id="utdId" name="UtdId" required />
+    </div>
+    <button type="submit">Submit</button>
+</form>
