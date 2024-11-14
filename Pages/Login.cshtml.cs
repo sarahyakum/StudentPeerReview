@@ -72,6 +72,7 @@ namespace StudentPR.Pages
 
                     return RedirectToPage("/PeerReviewForm");
                 } else if (errorMessage == "Change password"){
+                    HttpContext.Session.SetString("StudentNetId", NetId);
                     return RedirectToPage("/ChangePassword");
                 }
 

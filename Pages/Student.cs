@@ -7,5 +7,6 @@ namespace StudentPeerReview.Models
         public string NetId { get; set; }
         public string UtdId { get; set; }
         public string Name { get; set; }
+        public string Password { get; set; }
     }
 }
