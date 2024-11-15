@@ -1,58 +1,56 @@
 @page
+@model StudentPR.Pages.PeerReviewFormModel
 
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Peer Review Form";
+    var teamMembers = Model.GetTeamMembers();
+    var criteriaNames = Model.GetCriteriaNames();
+    var criteriaDescriptions = Model.GetCriteriaDescriptions();
 }
 
 <link rel="stylesheet" href="~/css/styles.css" />
 
 <h2>Peer Review Form</h2>
 
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="error-message">
+        <p>@Model.ErrorMessage</p>
+    </div>
+}
+
 <div class="peer-review-form">
     <table>
         <thead>
             <tr>
-                <th>Students</th>
-                <th>Criteria 1</th>
-                <th>Criteria 2</th>
-                <th>Criteria 3</th>
-                <!-- Add more criteria as needed -->
+            <th>Students</th>
+                @foreach (var criteriaName in criteriaNames)
+                {
+                    <th>@criteriaName</th>
+                }
             </tr>
         </thead>
         <tbody>
-            @for (int i = 1; i <= 5; i++) // Assume there are 5 students
+            @foreach (var member in teamMembers)
             {
                 <tr>
-                    <td>Student @i</td>
-                    <td>
-                        <select name="criteria1-student@i">
-                            @for (int score = 0; score <= 6; score++)
-                            {
-                                <option value="@score">@score</option>
-                            }
-                        </select>
-                    </td>
-                    <td>
-                        <select name="criteria2-student@i">
-                            @for (int score = 0; score <= 6; score++)
-                            {
-                                <option value="@score">@score</option>
-                            }
-                        </select>
-                    </td>
-                    <td>
-                        <select name="criteria3-student@i">
-                            @for (int score = 0; score <= 6; score++)
-                            {
-                                <option value="@score">@score</option>
-                            }
-                        </select>
-                    </td>
+                    <td>@member.Name (@member.NetId)</td>
+                    @foreach (var criteria in criteriaNames)
+                    {
+                        <td>
+                            <select name="@criteria-@member.NetId">
+                                @for (int score = 0; score <= 6; score++)
+                                {
+                                    <option value="@score">@score</option>
+                                }
+                            </select>
+                        </td>
+                    }
                 </tr>
             }
         </tbody>
     </table>
 
     <button type="submit" class="btn">Submit Review</button>
-</div>
+</div> 
