@@ -33,9 +33,10 @@ app.UseAuthorization();
 app.MapRazorPages();
 
 // Set the default route to Login.cshtml
-app.MapGet("/", async context =>
+app.MapGet("/", context =>
 {
     context.Response.Redirect("/Login");
+    return Task.CompletedTask;  // Return a completed task to satisfy the method signature
 });
 
 app.Run();
