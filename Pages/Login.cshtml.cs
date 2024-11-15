@@ -46,7 +46,10 @@ namespace StudentPR.Pages
                 {
                     // Retrieve student's details
                     Student? student = null;
-                    using (var cmd = new MySqlCommand("SELECT StuNetID, StuUTDID, StuName FROM Student WHERE StuNetID = @NetId", connection))
+                    using (var cmd = new MySqlCommand("SELECT S.StuNetID, S.StuUTDID, S.StuName, M.SecCode, M.TeamNum " 
+                                                        + "FROM Student S "
+                                                        + "INNER JOIN MemberOf M ON S.StuNetID = M.StuNetID " 
+                                                        + "WHERE S.StuNetID = @NetId", connection))
                     {
                         cmd.Parameters.AddWithValue("@NetId", NetId);
                         using (var reader = cmd.ExecuteReader())
@@ -57,7 +60,9 @@ namespace StudentPR.Pages
                                 {
                                     NetId = reader["StuNetID"]?.ToString() ?? string.Empty,
                                     UtdId = reader["StuUTDID"]?.ToString() ?? string.Empty,
-                                    Name = reader["StuName"]?.ToString() ?? string.Empty
+                                    Name = reader["StuName"]?.ToString() ?? string.Empty,
+                                    Section = reader["SecCode"]?.ToString() ?? string.Empty,
+                                    TeamNum = reader["TeamNum"]?.ToString() ?? string.Empty
                                 };
                             }
                         }
@@ -69,6 +74,8 @@ namespace StudentPR.Pages
                         HttpContext.Session.SetString("StudentNetId", student.NetId);
                         HttpContext.Session.SetString("StudentUtdId", student.UtdId);
                         HttpContext.Session.SetString("StudentName", student.Name);
+                        HttpContext.Session.SetString("SectionCode", student.Section);
+                        HttpContext.Session.SetString("TeamNumber", student.TeamNum);
                         
                         return RedirectToPage("/PeerReviewForm");
                     } 

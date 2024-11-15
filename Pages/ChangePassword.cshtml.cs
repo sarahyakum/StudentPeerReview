@@ -58,9 +58,9 @@ namespace StudentPR.Pages
 
                     if (errorMessage == "Success")
                     {
-                        // retrieve student's details
+                        // Retrieve student's details
                         Student? student = null;
-                        using (var cmd = new MySqlCommand("SELECT StuNetID, StuUTDID, StuName, StuPassword FROM Student WHERE StuNetID = @NetId", connection))
+                        using (var cmd = new MySqlCommand("SELECT StuPassword FROM Student WHERE StuNetID = @NetId", connection))
                         {
                             cmd.Parameters.AddWithValue("@NetId", NetId);
                             using (var reader = cmd.ExecuteReader())
@@ -69,8 +69,6 @@ namespace StudentPR.Pages
                                 {
                                     student = new Student
                                     {
-                                        UtdId = reader["StuUTDID"]?.ToString() ?? string.Empty,
-                                        Name = reader["StuName"]?.ToString() ?? string.Empty,
                                         Password = reader["StuPassword"]?.ToString() ?? string.Empty
                                     };
                                 }
@@ -79,11 +77,8 @@ namespace StudentPR.Pages
 
                         if (student != null)
                         {
-                            // store the student information in session
-                            HttpContext.Session.SetString("StudentUtdId", student.UtdId);
-                            HttpContext.Session.SetString("StudentName", student.Name);
+                            // Store the student information in session
                             HttpContext.Session.SetString("StudentPassword", student.Password);
-
                             return RedirectToPage("/PeerReviewForm");
                         }
                         else 
