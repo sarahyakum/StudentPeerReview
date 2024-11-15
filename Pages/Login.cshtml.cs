@@ -1,16 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Http;
 using MySql.Data.MySqlClient;
 using System.Data;
-using StudentPeerReview.Data;
 using StudentPeerReview.Models;
 
 namespace StudentPR.Pages
 {
     public class LoginModel : PageModel
     {
-        public string ErrorMessage { get; set; }
+        public string ErrorMessage { get; set; } = string.Empty;
 
         private readonly IConfiguration _config;
 
@@ -21,7 +19,7 @@ namespace StudentPR.Pages
 
         public IActionResult OnPost(string NetId, string UtdId)
         {
-            string connectionString = _config.GetConnectionString("DefaultConnection");
+            string connectionString = _config.GetConnectionString("DefaultConnection") ?? string.Empty;
 
             using (var connection = new MySqlConnection(connectionString))
             {
@@ -41,13 +39,13 @@ namespace StudentPR.Pages
                     cmd.Parameters.Add(errorParam);
 
                     cmd.ExecuteNonQuery();
-                    errorMessage = errorParam.Value.ToString();
+                    errorMessage = errorParam.Value.ToString() ?? string.Empty;
                 }
 
                 if (errorMessage == "Success")
                 {
                     // Retrieve student's details
-                    Student student = null;
+                    Student? student = null;
                     using (var cmd = new MySqlCommand("SELECT StuNetID, StuUTDID, StuName FROM Student WHERE StuNetID = @NetId", connection))
                     {
                         cmd.Parameters.AddWithValue("@NetId", NetId);
@@ -57,29 +55,40 @@ namespace StudentPR.Pages
                             {
                                 student = new Student
                                 {
-                                    NetId = reader["StuNetID"].ToString(),
-                                    UtdId = reader["StuUTDID"].ToString(),
-                                    Name = reader["StuName"].ToString()
+                                    NetId = reader["StuNetID"]?.ToString() ?? string.Empty,
+                                    UtdId = reader["StuUTDID"]?.ToString() ?? string.Empty,
+                                    Name = reader["StuName"]?.ToString() ?? string.Empty
                                 };
                             }
                         }
                     }
 
-                    // Store the student information in session
-                    HttpContext.Session.SetString("StudentNetId", student.NetId);
-                    HttpContext.Session.SetString("StudentUtdId", student.UtdId);
-                    HttpContext.Session.SetString("StudentName", student.Name);
-
-                    return RedirectToPage("/PeerReviewForm");
-                } else if (errorMessage == "Change password"){
+                    if (student != null)
+                    {
+                        // Store the student information in session
+                        HttpContext.Session.SetString("StudentNetId", student.NetId);
+                        HttpContext.Session.SetString("StudentUtdId", student.UtdId);
+                        HttpContext.Session.SetString("StudentName", student.Name);
+                        
+                        return RedirectToPage("/PeerReviewForm");
+                    } 
+                    else 
+                    {
+                        ErrorMessage = "Student not found.";
+                        return Page();
+                    }
+                } 
+                else if (errorMessage == "Change password")
+                {
                     HttpContext.Session.SetString("StudentNetId", NetId);
                     return RedirectToPage("/ChangePassword");
                 }
-
-                // Set error message to display
-                ErrorMessage = errorMessage;
+                else
+                {
+                    ErrorMessage = errorMessage;
+                    return Page();
+                }
             }
-            return Page();
         }
     }
 }

@@ -1,16 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Http;
 using MySql.Data.MySqlClient;
 using System.Data;
-using StudentPeerReview.Data;
 using StudentPeerReview.Models;
 
 namespace StudentPR.Pages
 {
     public class ChangePasswordModel : PageModel
     {
-        public string ErrorMessage { get; set; }
+        public string ErrorMessage { get; set; } = string.Empty;
 
         private readonly IConfiguration _config;
 
@@ -28,9 +26,13 @@ namespace StudentPR.Pages
             }
             else 
             {
-
-                string connectionString = _config.GetConnectionString("DefaultConnection");
-                string NetId = HttpContext.Session.GetString("StudentNetId");
+                string connectionString = _config.GetConnectionString("DefaultConnection") ?? string.Empty;
+                string? NetId = HttpContext.Session.GetString("StudentNetId");
+                if (string.IsNullOrEmpty(NetId))
+                {
+                    ErrorMessage = "Session expired or invalid. Please log in again.";
+                    return RedirectToPage("/Login");
+                }
 
                 using (var connection = new MySqlConnection(connectionString))
                 {
@@ -51,13 +53,13 @@ namespace StudentPR.Pages
                         cmd.Parameters.Add(errorParam);
 
                         cmd.ExecuteNonQuery();
-                        errorMessage = errorParam.Value.ToString();
+                        errorMessage = errorParam.Value.ToString() ?? string.Empty;
                     }
 
                     if (errorMessage == "Success")
                     {
-                        // Retrieve student's details
-                        Student student = null;
+                        // retrieve student's details
+                        Student? student = null;
                         using (var cmd = new MySqlCommand("SELECT StuNetID, StuUTDID, StuName, StuPassword FROM Student WHERE StuNetID = @NetId", connection))
                         {
                             cmd.Parameters.AddWithValue("@NetId", NetId);
@@ -67,9 +69,9 @@ namespace StudentPR.Pages
                                 {
                                     student = new Student
                                     {
-                                        UtdId = reader["StuUTDID"].ToString(),
-                                        Name = reader["StuName"].ToString(),
-                                        Password = reader["StuPassword"].ToString()
+                                        UtdId = reader["StuUTDID"]?.ToString() ?? string.Empty,
+                                        Name = reader["StuName"]?.ToString() ?? string.Empty,
+                                        Password = reader["StuPassword"]?.ToString() ?? string.Empty
                                     };
                                 }
                             }
@@ -77,7 +79,7 @@ namespace StudentPR.Pages
 
                         if (student != null)
                         {
-                            // Store the student information in session
+                            // store the student information in session
                             HttpContext.Session.SetString("StudentUtdId", student.UtdId);
                             HttpContext.Session.SetString("StudentName", student.Name);
                             HttpContext.Session.SetString("StudentPassword", student.Password);
@@ -89,9 +91,10 @@ namespace StudentPR.Pages
                             ErrorMessage = "Student not found.";
                             return Page();
                         }
-                        
-                    } else {
-                        ErrorMessage = errorMessage; // Set error message to display
+                    } 
+                    else 
+                    {
+                        ErrorMessage = errorMessage;
                         return Page();
                     }
                 }
