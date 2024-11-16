@@ -57,3 +57,27 @@ form {
 .table tr:hover {
     background-color: #ddd;
 }
+
+.criteria-descriptions {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 60px;
+}
+
+.criteria-descriptions h3 {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.criteria-descriptions li {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.criteria-descriptions li strong {
+    color: #007BFF;
+}
