@@ -21,7 +21,7 @@
 }
 
 <div class="peer-review-form">
-    <table>
+    <table class="table">
         <thead>
             <tr>
             <th>Students</th>
@@ -54,3 +54,15 @@
 
     <button type="submit" class="btn">Submit Review</button>
 </div> 
+
+<div class="criteria-descriptions">
+    <h3>Criteria Descriptions</h3>
+    <ul>
+        @for (int i = 0; i < criteriaNames.Count(); i++)
+        {
+            <li>
+                <strong>@criteriaNames[i]</strong>: @criteriaDescriptions[i]
+            </li>
+        }
+    </ul>
+</div>
