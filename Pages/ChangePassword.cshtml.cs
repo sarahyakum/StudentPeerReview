@@ -79,7 +79,8 @@ namespace StudentPR.Pages
                         {
                             // Store the student information in session
                             HttpContext.Session.SetString("StudentPassword", student.Password);
-                            return RedirectToPage("/PeerReviewForm");
+                            TempData["SuccessMessage"] = "Success! Log in with your new password.";
+                            return RedirectToPage("/Login");
                         }
                         else 
                         {

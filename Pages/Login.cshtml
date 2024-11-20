@@ -11,6 +11,13 @@
     <div style="color: red;">@Model.ErrorMessage</div>
 }
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div style="color: green;">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
 <form method="post">
     <div>
         <label for="netId">NetID:</label>
