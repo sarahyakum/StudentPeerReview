@@ -1,0 +1,13 @@
+@page
+@model StudentPR.Pages.LogoutModel
+@{
+    ViewData["Title"] = "Log In";
+}
+
+<div style="color: green; margin-bottom: 10px;">
+    You are currently logged in as @HttpContext.Session.GetString("StudentName")
+</div>
+
+<form method="post">
+    <button type="logout">Logout</button>
+</form>
