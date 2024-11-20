@@ -17,6 +17,15 @@ namespace StudentPR.Pages
             _config = config;
         }
 
+        public IActionResult OnGet()
+        {
+            if (HttpContext.Session.GetString("LoggedIn") != null) // user is logged in
+            {
+                return RedirectToPage("/Logout");
+            }
+            return Page();
+        }
+
         public IActionResult OnPost(string NetId, string UtdId)
         {
             string connectionString = _config.GetConnectionString("DefaultConnection") ?? string.Empty;
@@ -76,6 +85,7 @@ namespace StudentPR.Pages
                         HttpContext.Session.SetString("StudentName", student.Name);
                         HttpContext.Session.SetString("SectionCode", student.Section);
                         HttpContext.Session.SetString("TeamNumber", student.TeamNum);
+                        HttpContext.Session.SetString("LoggedIn", student.NetId);
                         
                         return RedirectToPage("/PeerReviewForm");
                     } 

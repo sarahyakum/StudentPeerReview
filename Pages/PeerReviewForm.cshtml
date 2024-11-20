@@ -15,9 +15,7 @@
 
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
 {
-    <div class="error-message">
-        <p>@Model.ErrorMessage</p>
-    </div>
+     <div style="color: red;">@Model.ErrorMessage</div>
 }
 
 <div class="peer-review-form">

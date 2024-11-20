@@ -18,6 +18,13 @@
     </div>
 }
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div style="color: red;">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
 <form method="post">
     <div>
         <label for="netId">NetID:</label>

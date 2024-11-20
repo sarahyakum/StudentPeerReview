@@ -34,9 +34,16 @@ namespace StudentPR.Pages
             return HttpContext.Session.GetObject<List<String>>("CriteriaDescriptions") ?? new List<String>();
         }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
+            if (HttpContext.Session.GetString("LoggedIn") == null)
+            {
+                TempData["ErrorMessage"] = "You must log in to access this page.";
+                return RedirectToPage("/Login");
+            }
+
             LoadTeamMembers();
+            return Page();
         }
 
         private IActionResult LoadTeamMembers()
