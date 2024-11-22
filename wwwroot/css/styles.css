@@ -28,6 +28,7 @@ form {
     border: none;
     cursor: pointer;
     text-decoration: none;
+    align-self: baseline;
 }
 
 .btn:hover {
