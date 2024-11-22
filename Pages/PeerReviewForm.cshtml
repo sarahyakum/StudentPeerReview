@@ -18,40 +18,42 @@
      <div style="color: red;">@Model.ErrorMessage</div>
 }
 
-<div class="peer-review-form">
-    <table class="table">
-        <thead>
-            <tr>
-            <th>Students</th>
-                @foreach (var criteriaName in criteriaNames)
-                {
-                    <th>@criteriaName</th>
-                }
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var member in teamMembers)
-            {
+<form method="post">
+    <div class="peer-review-form">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@member.Name (@member.NetId)</td>
-                    @foreach (var criteria in criteriaNames)
+                <th>Students</th>
+                    @foreach (var criteriaName in criteriaNames)
                     {
-                        <td>
-                            <select name="@criteria-@member.NetId">
-                                @for (int score = 0; score <= 6; score++)
-                                {
-                                    <option value="@score">@score</option>
-                                }
-                            </select>
-                        </td>
+                        <th>@criteriaName</th>
                     }
                 </tr>
-            }
-        </tbody>
-    </table>
-
-    <button type="submit" class="btn">Submit Review</button>
-</div> 
+            </thead>
+            <tbody>
+                @foreach (var member in teamMembers)
+                {
+                    <tr>
+                        <td>@member.Name (@member.NetId)</td>
+                        @foreach (var criteria in criteriaNames)
+                        {
+                            <td>
+                                <select name="@criteria-@member.NetId">
+                                    <option value="" selected disabled>Select</option> <!-- null value option -->
+                                    @for (int score = 0; score <= 5; score++)
+                                    {
+                                        <option value="@score">@score</option>
+                                    }
+                                </select>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <button type="submit" class="btn">Submit Review</button>
+    </div> 
+</form>
 
 <div class="criteria-descriptions">
     <h3>Criteria Descriptions</h3>
