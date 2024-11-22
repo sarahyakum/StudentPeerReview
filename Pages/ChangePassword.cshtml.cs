@@ -27,6 +27,11 @@ namespace StudentPR.Pages
             else 
             {
                 string connectionString = _config.GetConnectionString("DefaultConnection") ?? string.Empty;
+                if (string.IsNullOrEmpty(connectionString))
+                {
+                    throw new ArgumentException("Connection string 'DefaultConnection' is not set.");
+                }
+
                 string? NetId = HttpContext.Session.GetString("StudentNetId");
                 if (string.IsNullOrEmpty(NetId))
                 {

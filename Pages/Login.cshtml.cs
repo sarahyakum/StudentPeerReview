@@ -29,6 +29,10 @@ namespace StudentPR.Pages
         public IActionResult OnPost(string NetId, string UtdId)
         {
             string connectionString = _config.GetConnectionString("DefaultConnection") ?? string.Empty;
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                throw new ArgumentException("Connection string 'DefaultConnection' is not set.");
+            }
 
             using (var connection = new MySqlConnection(connectionString))
             {
