@@ -36,13 +36,27 @@ namespace StudentPR.Pages
 
         public IActionResult OnGet()
         {
-            if (HttpContext.Session.GetString("LoggedIn") == null)
+
+            var loggedInStatus = HttpContext.Session.GetString("LoggedIn");
+            if (loggedInStatus == null)
             {
                 TempData["ErrorMessage"] = "You must log in to access this page.";
                 return RedirectToPage("/Login");
             }
 
-            LoadTeamMembers();
+            var availability = HttpContext.Session.GetString("PRAvailability");
+            if (availability == "Completed")
+            {
+                return RedirectToPage("/PeerReviewSuccess");
+            }
+            else if (availability == "Unavailable")
+            {
+                return RedirectToPage("/PeerReviewUnavailable");
+            }
+            else if (availability == "Available")
+            {
+                LoadTeamMembers();
+            }
             return Page();
         }
 
@@ -137,6 +151,7 @@ namespace StudentPR.Pages
                 }
             }     
             // Success
+            HttpContext.Session.SetString("PRAvailability", "Completed");
             return RedirectToPage("/PeerReviewSuccess");
         }
 
