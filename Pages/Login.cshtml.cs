@@ -92,7 +92,7 @@ namespace StudentPR.Pages
                         HttpContext.Session.SetString("LoggedIn", student.NetId);
                         HttpContext.Session.SetString("PRAvailability", GetAvailability(student.NetId, student.Section));
                         
-                        return RedirectToPage("/PeerReviewForm");
+                        return RedirectToPage("/PRForm");
                     } 
                     else 
                     {
