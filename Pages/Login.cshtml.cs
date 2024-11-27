@@ -90,7 +90,8 @@ namespace StudentPR.Pages
                         HttpContext.Session.SetString("SectionCode", student.Section);
                         HttpContext.Session.SetString("TeamNumber", student.TeamNum);
                         HttpContext.Session.SetString("LoggedIn", student.NetId);
-                        HttpContext.Session.SetString("PRAvailability", GetAvailability(student.NetId, student.Section));
+                        HttpContext.Session.SetString("PRAvailability", GetPRAvailability(student.NetId, student.Section));
+                        HttpContext.Session.SetString("ScoresAvailability", GetScoresAvailability(student.NetId, student.Section));
                         
                         return RedirectToPage("/PRForm");
                     } 
@@ -114,7 +115,7 @@ namespace StudentPR.Pages
         }
 
         // returns peer review availability for a specific student
-        private string GetAvailability(string NetId, string SecCode)
+        private string GetPRAvailability(string NetId, string SecCode)
         {
             string connectionString = _config.GetConnectionString("DefaultConnection") ?? string.Empty;
             if (string.IsNullOrEmpty(connectionString))
@@ -128,6 +129,39 @@ namespace StudentPR.Pages
 
                 string errorMessage;
                 using (var cmd = new MySqlCommand("check_peer_review_availability", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@student_netID", NetId);
+                    cmd.Parameters.AddWithValue("@section_code", SecCode);
+                    var errorParam = new MySqlParameter("@error_message", MySqlDbType.VarChar)
+                    {
+                        Size = 100,
+                        Direction = ParameterDirection.Output
+                    };
+                    cmd.Parameters.Add(errorParam);
+                    cmd.ExecuteNonQuery();
+                    errorMessage = errorParam.Value.ToString() ?? string.Empty;
+                }
+                return errorMessage;
+            }
+        }
+
+
+        // returns scores availability for a specific student
+        private string GetScoresAvailability(string NetId, string SecCode)
+        {
+            string connectionString = _config.GetConnectionString("DefaultConnection") ?? string.Empty;
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                throw new ArgumentException("Connection string 'DefaultConnection' is not set.");
+            }
+
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string errorMessage;
+                using (var cmd = new MySqlCommand("check_scores_availability", connection))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@student_netID", NetId);

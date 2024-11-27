@@ -37,6 +37,12 @@ namespace StudentPR.Pages
                 return RedirectToPage("/Login");
             }
 
+            var availability = HttpContext.Session.GetString("ScoresAvailability");
+            if (availability == "Unavailable")
+            {
+                return RedirectToPage("/ScoresUnavailable");
+            }
+            
             LoadScores();
             return Page();
         }
@@ -70,7 +76,7 @@ namespace StudentPR.Pages
 
                 using (var cmd = new MySqlCommand("student_view_averages", connection))
                 {
-                    string ReviewType = "Midterm"; // CHANGE THIS
+                    string ReviewType = HttpContext.Session.GetString("ScoresAvailability") ?? string.Empty;
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@stu_netID", NetId);
                     cmd.Parameters.AddWithValue("@section_code", SecCode);

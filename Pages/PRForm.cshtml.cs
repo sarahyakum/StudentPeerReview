@@ -53,10 +53,8 @@ namespace StudentPR.Pages
             {
                 return RedirectToPage("/PRUnavailable");
             }
-            else if (availability == "Available")
-            {
-                LoadTeamMembers();
-            }
+            
+            LoadTeamMembers();
             return Page();
         }
 
@@ -180,7 +178,7 @@ namespace StudentPR.Pages
 
                 using (var cmd = new MySqlCommand("student_get_peer_review_criteria", connection))
                 {
-                    string ReviewType = "Midterm"; // CHANGE THIS
+                    string ReviewType = HttpContext.Session.GetString("PRAvailability") ?? string.Empty;
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@stu_netID", NetId);
                     cmd.Parameters.AddWithValue("@review_type", ReviewType);
