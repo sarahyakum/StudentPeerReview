@@ -23,9 +23,14 @@ namespace StudentPR.Pages
             return HttpContext.Session.GetObject<List<String>>("CriteriaNames") ?? new List<String>();
         }
 
-         public List<decimal> GetAverageScores()
+        public List<decimal> GetAverageScores()
         {
             return HttpContext.Session.GetObject<List<decimal>>("AverageScores") ?? new List<decimal>();
+        }
+
+        public String GetReviewType()
+        {
+            return HttpContext.Session.GetString("ScoresAvailability") ?? string.Empty;
         }
 
         public IActionResult OnGet()

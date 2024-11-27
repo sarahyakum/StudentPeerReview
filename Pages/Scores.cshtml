@@ -6,11 +6,12 @@
     ViewData["Title"] = "Scores";
     var criteriaNames = Model.GetCriteriaNames();
     var scores = Model.GetAverageScores();
+    String review_type = Model.GetReviewType();
 }
 
 <link rel="stylesheet" href="~/css/styles.css" />
 
-<h2>View Your Scores</h2>
+<h2>@review_type Scores</h2>
 
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
 {
