@@ -4,9 +4,38 @@
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Scores";
+    var criteriaNames = Model.GetCriteriaNames();
+    var scores = Model.GetAverageScores();
 }
 
 <link rel="stylesheet" href="~/css/styles.css" />
 
-<h1>View Your Scores</h1>
+<h2>View Your Scores</h2>
 
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+     <div style="color: red;">@Model.ErrorMessage</div>
+}
+
+<div class="average-scores">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Criteria</th>
+                @foreach (var criteriaName in criteriaNames)
+                {
+                    <th>@criteriaName</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Average Score</strong></td>
+                @foreach (var averageScore in scores)
+                {
+                    <td>@averageScore</td>
+                }
+            </tr>
+        </tbody>
+    </table>
+</div>
