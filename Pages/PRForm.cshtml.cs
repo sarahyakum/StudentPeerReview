@@ -115,12 +115,13 @@ namespace StudentPR.Pages
                             string errorMessage;
                             using (var cmd = new MySqlCommand("student_insert_score", connection, transaction)) // passes transaction here
                             {
+                                string ReviewType = HttpContext.Session.GetString("PRAvailability") ?? string.Empty;
                                 cmd.CommandType = CommandType.StoredProcedure;
                                 cmd.Parameters.AddWithValue("@section_code", SecCode);
                                 cmd.Parameters.AddWithValue("@reviewer_netID", NetId);
                                 cmd.Parameters.AddWithValue("@reviewee_netID", revieweeNetId);
                                 cmd.Parameters.AddWithValue("@criteria_name", criteriaName);
-                                cmd.Parameters.AddWithValue("@review_type", "Midterm");     // CHANGE THIS
+                                cmd.Parameters.AddWithValue("@review_type", ReviewType);
                                 cmd.Parameters.AddWithValue("@updated_score", score);
                                 var errorParam = new MySqlParameter("@error_message", MySqlDbType.VarChar)
                                 {
