@@ -69,7 +69,8 @@ These instructions assume you have already created and started the database inst
    git clone https://github.com/sarahyakum/StudentPeerReview.git
 
 2. Navigate to the project folder.
-3. Build the application:
+3. In `appsettings.json`, update the `DefaultConnection` string with your specific MySQL credentials.
+4. Build the application:
    ```bash
    dotnet build
 5. Run the application:
