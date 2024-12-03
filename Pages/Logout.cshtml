@@ -1,13 +1,22 @@
+@*
+    Written by Darya Anbar for CS 4485.0W1, Senior Design Project, Started November 13, 2024.
+    Net ID: dxa200020
+
+    This file outlines the Logout Razor Page.
+*@
+
 @page
 @model StudentPR.Pages.LogoutModel
 @{
     ViewData["Title"] = "Log In";
 }
 
+<!-- Displays name of student currently logged in -->
 <div style="color: green; margin-bottom: 10px;">
     You are currently logged in as @HttpContext.Session.GetString("StudentName")
 </div>
 
+<!-- Form for logging out -->
 <form method="post">
     <button type="logout">Logout</button>
 </form>

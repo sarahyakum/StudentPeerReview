@@ -1,3 +1,11 @@
+/*
+	Written by Darya Anbar for CS 4485.0W1, Senior Design Project, Started November 13, 2024.
+    Net ID: dxa200020
+
+    This file defines the model that handles the peer review form functionality.
+*/
+
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MySql.Data.MySqlClient;
@@ -10,6 +18,7 @@ namespace StudentPR.Pages
 {
     public class PRFormModel : PageModel
     {
+        // Error message to be displayed on the Page
         public string ErrorMessage { get; set; } = string.Empty;
 
         private readonly IConfiguration _config;
@@ -19,24 +28,28 @@ namespace StudentPR.Pages
             _config = config;
         }
 
+        // Retrieves list of team members from the session, if exists        
         public List<Student> GetTeamMembers()
         {
             return HttpContext.Session.GetObject<List<Student>>("TeamMembers") ?? new List<Student>();
         }
 
+        // Retrieves list of criteria names from the session, if exists
         public List<String> GetCriteriaNames()
         {
             return HttpContext.Session.GetObject<List<String>>("CriteriaNames") ?? new List<String>();
         }
 
+        // Retrieves list of criteria descriptions from the session, if exists
         public List<String> GetCriteriaDescriptions()
         {
             return HttpContext.Session.GetObject<List<String>>("CriteriaDescriptions") ?? new List<String>();
         }
 
+        // Handles GET requests
         public IActionResult OnGet()
         {
-
+            // Checks if user is logged in and redirects to Login Page, if not
             var loggedInStatus = HttpContext.Session.GetString("LoggedIn");
             if (loggedInStatus == null)
             {
@@ -44,6 +57,7 @@ namespace StudentPR.Pages
                 return RedirectToPage("/Login");
             }
 
+            // Checks peer review availability and redirects to appropriate Page
             var availability = HttpContext.Session.GetString("PRAvailability");
             if (availability == "Completed")
             {
@@ -53,19 +67,22 @@ namespace StudentPR.Pages
             {
                 return RedirectToPage("/PRUnavailable");
             }
-            
+
             LoadTeamMembers();
             return Page();
         }
 
+        // Handles POST requests to submit the peer review scores
         public IActionResult OnPost()
         {
+            // Retrieves database connection string from configuration
             string connectionString = _config.GetConnectionString("DefaultConnection") ?? string.Empty;
             if (string.IsNullOrEmpty(connectionString))
             {
                 throw new ArgumentException("Connection string 'DefaultConnection' is not set.");
             }
 
+            // Retrieves student's NetId from the session 
             string? NetId = HttpContext.Session.GetString("StudentNetId");
             if (string.IsNullOrEmpty(NetId))
             {
@@ -73,17 +90,20 @@ namespace StudentPR.Pages
                 return RedirectToPage("/Login");
             }
             
+            // Retrieves section code, team members, and criteria names from the session 
             string? SecCode = HttpContext.Session.GetString("SectionCode");
             var teamMembers = GetTeamMembers();
             var criteriaNames = GetCriteriaNames();
             var scores = new List<(string RevieweeNetId, string CriteriaName, int Score)>();
 
-            // validates scores and stores them
+            // Validates and stores the peer review scores for each team member and criteria
             foreach (var member in teamMembers)
             {
                 foreach (var criteria in criteriaNames)
                 {
                     string formFieldName = $"{criteria}-{member.NetId}";
+
+                    // Error Message if not all fields are filled out
                     if (!Request.Form.TryGetValue(formFieldName, out var scoreValue) || string.IsNullOrEmpty(scoreValue))
                     {
                         ErrorMessage = $"Please fill out all scores before submitting.";
@@ -91,7 +111,7 @@ namespace StudentPR.Pages
                     }
                     if (int.TryParse(scoreValue, out int score))
                     {
-                        scores.Add((member.NetId, criteria, score));  // stores each respective reviewee, criteria, score 
+                        scores.Add((member.NetId, criteria, score));  // Stores each respective reviewee, criteria, score 
                     }
                     else
                     {
@@ -101,19 +121,21 @@ namespace StudentPR.Pages
                 }
             }
 
-            // uses a transaction to roll back all operations in the event of a failure 
+            // Establishes a connection to the MySQL database
             using (var connection = new MySqlConnection(connectionString))
             {
                 connection.Open();
-                
-                using (var transaction = connection.BeginTransaction()) // begin transaction
+
+                // Uses a transaction to roll back all operations in the event of a failure 
+                using (var transaction = connection.BeginTransaction()) // Begin transaction
                 {
                     try
                     {
+                        // Iterates over each score and inserts it into the database
                         foreach (var (revieweeNetId, criteriaName, score) in scores)
                         {
                             string errorMessage;
-                            using (var cmd = new MySqlCommand("student_insert_score", connection, transaction)) // passes transaction here
+                            using (var cmd = new MySqlCommand("student_insert_score", connection, transaction)) // Passes transaction here
                             {
                                 string ReviewType = HttpContext.Session.GetString("PRAvailability") ?? string.Empty;
                                 cmd.CommandType = CommandType.StoredProcedure;
@@ -133,36 +155,40 @@ namespace StudentPR.Pages
                                 cmd.ExecuteNonQuery();
                                 errorMessage = errorParam.Value.ToString() ?? string.Empty;
 
+                                // Checks if the insertion was successful, otherwise triggers a rollback
                                 if (errorMessage != "Success")
                                 {
-                                    throw new Exception(errorMessage); // trigger rollback
+                                    throw new Exception(errorMessage);
                                 }
                             }
                         }
-                        transaction.Commit(); // commits transaction if all inserts succeeded
+                        transaction.Commit(); // Commits transaction if all inserts succeeded
                     }
                     catch (Exception ex)
                     {
-                        transaction.Rollback(); // rollback all operations if an error occurs
+                        transaction.Rollback(); // Rollbacks all operations if an error occurs
                         ErrorMessage = $"Failed to submit scores: {ex.Message}";
                         return Page(); 
                     }
                 }
             }     
-            // Success
+            // Successfully completed submission
             HttpContext.Session.SetString("PRAvailability", "Completed");
             return RedirectToPage("/PRSuccess");
         }
 
 
+        // Loads team members and peer review criteria from the database and stores them in the session
         private IActionResult LoadTeamMembers()
         {   
+            // Retrieves database connection string from configuration
             string connectionString = _config.GetConnectionString("DefaultConnection") ?? string.Empty;
             if (string.IsNullOrEmpty(connectionString))
             {
                 throw new ArgumentException("Connection string 'DefaultConnection' is not set.");
             }
             
+            // Retrieves student's NetId from the session 
             string? NetId = HttpContext.Session.GetString("StudentNetId");
             if (string.IsNullOrEmpty(NetId))
             {
@@ -170,6 +196,7 @@ namespace StudentPR.Pages
                 return RedirectToPage("/Login");
             }
             
+            // Retrieves section code and team number from the session 
             string? SecCode = HttpContext.Session.GetString("SectionCode");
             string? TeamNum = HttpContext.Session.GetString("TeamNumber");
 
@@ -177,18 +204,21 @@ namespace StudentPR.Pages
             {
                 connection.Open();
 
+                // Creates MySQlCommand to call the stored procedure
                 using (var cmd = new MySqlCommand("student_get_peer_review_criteria", connection))
                 {
                     string ReviewType = HttpContext.Session.GetString("PRAvailability") ?? string.Empty;
                     cmd.CommandType = CommandType.StoredProcedure;
+
+                    // Loads parameters
                     cmd.Parameters.AddWithValue("@stu_netID", NetId);
                     cmd.Parameters.AddWithValue("@review_type", ReviewType);
                     cmd.Parameters.AddWithValue("@section_code", SecCode);
 
-                     List<String> criteriaNames = new();
-                     List<String> criteriaDescriptions = new();
+                    List<String> criteriaNames = new();
+                    List<String> criteriaDescriptions = new();
                     
-                    // Execute the command and read the results
+                    // Executes the command and reads the results
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -197,10 +227,13 @@ namespace StudentPR.Pages
                             criteriaDescriptions.Add(reader["CriteriaDescription"]?.ToString() ?? string.Empty);
                         }
                     }
+
+                    // Stores retrieved criteria in the session
                     HttpContext.Session.SetObject("CriteriaNames", criteriaNames);
                     HttpContext.Session.SetObject("CriteriaDescriptions", criteriaDescriptions);
                 }
 
+                // Creates MySQlCommand to call the stored procedure
                 using (var cmd = new MySqlCommand("student_get_team_members", connection))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -218,7 +251,7 @@ namespace StudentPR.Pages
 
                     List<Student> teamMembers = new();
                     
-                    // Execute the command and read the results
+                    // Executes the command and reads the results
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -230,6 +263,8 @@ namespace StudentPR.Pages
                             });
                         }
                     }
+
+                    // Stores the team members in the session
                     HttpContext.Session.SetObject("TeamMembers", teamMembers);
                 }
             }
@@ -238,13 +273,16 @@ namespace StudentPR.Pages
     }
 
 
+    // Class for extension methods for storing and retrieving objects from the session
     public static class SessionExtensions
     {
+        // Serializes and stores an object in the session
         public static void SetObject<T>(this ISession session, string key, T value)
         {
             session.SetString(key, JsonSerializer.Serialize(value));
         }
 
+        // Retrieves and deserializes an object from the session
         public static T? GetObject<T>(this ISession session, string key)
         {
             var value = session.GetString(key);

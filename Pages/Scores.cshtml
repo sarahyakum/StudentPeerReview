@@ -1,9 +1,18 @@
+@*
+    Written by Darya Anbar for CS 4485.0W1, Senior Design Project, Started November 13, 2024.
+    Net ID: dxa200020
+
+    This file outlines the Scores Razor Page.
+*@
+
 @page
 @model StudentPR.Pages.ScoresModel
 
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Scores";
+
+    // Retrieves criteria, average scores, and review type for use in the form
     var criteriaNames = Model.GetCriteriaNames();
     var scores = Model.GetAverageScores();
     String review_type = Model.GetReviewType();
@@ -18,14 +27,15 @@
      <div style="color: red;">@Model.ErrorMessage</div>
 }
 
-<div class="average-scores">
+<!-- Main container for the average scores -->
+<div class="average-scores"> <!-- Table for organizing criteria and average scores -->
     <table class="table">
         <thead>
             <tr>
                 <th>Criteria</th>
                 @foreach (var criteriaName in criteriaNames)
                 {
-                    <th>@criteriaName</th>
+                    <th>@criteriaName</th>  <!-- Each criterion is a table header -->
                 }
             </tr>
         </thead>
@@ -34,7 +44,7 @@
                 <td><strong>Average Score</strong></td>
                 @foreach (var averageScore in scores)
                 {
-                    <td>@averageScore</td>
+                    <td>@averageScore</td>  <!-- Displays average score -->
                 }
             </tr>
         </tbody>

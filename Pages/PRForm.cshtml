@@ -1,15 +1,25 @@
+@*
+    Written by Kiara Vaz and Darya Anbar for CS 4485.0W1, Senior Design Project, Started October 20, 2024.
+    Net IDs: kmv200000 and dxa200020
+
+    This file outlines the Razor Page that contains the Peer Review Form.
+*@
+
 @page
 @model StudentPR.Pages.PRFormModel
 
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Peer Review Form";
+
+    // Retrieves team members and criteria details for use in the form
     var teamMembers = Model.GetTeamMembers();
     var criteriaNames = Model.GetCriteriaNames();
     var criteriaDescriptions = Model.GetCriteriaDescriptions();
 }
 
-<link rel="stylesheet" href="~/css/styles.css" />
+<!-- External stylesheet for custom styles -->
+<link rel="stylesheet" href="~/css/styles.css" /> 
 
 <h2>Peer Review Form</h2>
 
@@ -18,15 +28,16 @@
      <div style="color: red;">@Model.ErrorMessage</div>
 }
 
+<!-- Main container for the peer review form (Kiara) -->
 <div class="peer-review-form">
     <form method="post">
-        <table class="table">
+        <table class="table"> <!-- Table for organizing team members and criteria -->
             <thead>
                 <tr>
                 <th>Students</th>
                     @foreach (var criteriaName in criteriaNames)
                     {
-                        <th>@criteriaName</th>
+                        <th>@criteriaName</th>  <!-- Each criterion is a table header -->
                     }
                 </tr>
             </thead>
@@ -34,15 +45,15 @@
                 @foreach (var member in teamMembers)
                 {
                     <tr>
-                        <td>@member.Name (@member.NetId)</td>
-                        @foreach (var criteria in criteriaNames)
+                        <td>@member.Name (@member.NetId)</td> <!-- Displays student's name and NetId -->
+                        @foreach (var criteria in criteriaNames) // Loops through criteria for each student
                         {
                             <td>
-                                <select name="@criteria-@member.NetId">
-                                    <option value="" selected disabled>Select</option> <!-- null value option -->
+                                <select name="@criteria-@member.NetId"> <!-- Score dropdown for each criterion -->
+                                    <option value="" selected disabled>Select</option>  <!-- Default disabled option -->
                                     @for (int score = 0; score <= 5; score++)
                                     {
-                                        <option value="@score">@score</option>
+                                        <option value="@score">@score</option>  // Score options
                                     }
                                 </select>
                             </td>
@@ -55,6 +66,7 @@
     </form>
 </div> 
 
+<!-- Section to display descriptions for each criterion (Darya) -->
 <div class="criteria-descriptions">
     <h3>Criteria Descriptions</h3>
     <ul>
