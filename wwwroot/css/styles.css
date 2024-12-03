@@ -1,3 +1,14 @@
+/*
+    Written by Kiara Vaz and Darya Anbar for CS 4485.0W1, Senior Design Project, Started October 20, 2024.
+    Net IDs: kmv200000 and dxa200020
+
+    This file contains styles for the layout, buttons, tables, and sections of this application's pages.
+*/
+
+
+/*
+    Default styles below (Kiara)
+*/
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -35,6 +46,9 @@ form {
     background-color: #0056b3;
 }
 
+/*
+    Custom table formatting for the Peer Review Form and Scores Table (Darya)
+*/
 .table {
     width: 100%;
     margin: 20px auto;
@@ -59,6 +73,9 @@ form {
     background-color: #ddd;
 }
 
+/*
+    Custom styles for the criteria descriptions box on the PR Form Page (Darya)
+*/
 .criteria-descriptions {
     margin-top: 40px;
     padding: 20px;
